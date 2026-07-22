@@ -1,0 +1,27 @@
+# Hermes config 템플릿 — 실제 config.yaml 스키마 기반
+# 경로 플레이스홀더는 bootstrap 3단계에서 치환됨
+# 모델 API키는 config에 직접 쓰지 않고 환경변수/프로바이더 설정으로 (hermes setup)
+
+model:
+  default: deepseek/deepseek-v4-flash   # 예시. 새 환경에서 hermes setup으로 선택
+
+agent:
+  max_turns: 90
+
+terminal:
+  backend: local
+  cwd: .
+
+# 스킬은 기본 위치(__HERMES_HOME__/skills)에 배치하므로 external_dirs 불필요.
+# repo의 스킬을 별도로 참조하고 싶을 때만 아래 주석 해제:
+# skills:
+#   external_dirs:
+#     - __BOOTSTRAP_REPO__/hermes/skills
+
+# 커스텀 프로바이더 필요 시 (반드시 list-of-dicts 형식):
+# custom_providers:
+#   - name: cursor-acp
+#     type: acp
+#     command: cursor
+#     args: --port 3000
+#     base_url: ''

@@ -1,0 +1,99 @@
+# ============================================
+# 시크릿 — 절대 커밋 금지 (최우선)
+# ============================================
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+**/secrets/
+**/credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*token*
+*secret*
+!*token*.example
+!*secret*.example
+
+# ============================================
+# Hermes 런타임 (로컬 상태, 이관 대상 아님)
+# ============================================
+**/profiles/*/memories/
+**/profiles/*/cron/
+**/profiles/*/audio_cache/
+**/profiles/*/scripts/
+**/profiles/*/.env
+**/.curator_backups/
+**/sessions/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+kanban.db
+
+# ============================================
+# OS
+# ============================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+# Linux
+*~
+.fuse_hidden*
+
+# ============================================
+# 에디터 / IDE
+# ============================================
+.idea/
+.vscode/
+!.vscode/extensions.json
+*.swp
+*.swo
+*.sublime-*
+.cursor/
+
+# ============================================
+# 언어 런타임
+# ============================================
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# 임시 / 로그 / 산출물
+# ============================================
+*.log
+*.tmp
+*.bak
+*.orig
+tmp/
+temp/
+logs/
+# 에이전트 작업 산출물은 repo에 두지 않음 (reports는 $E2E_ROOT에서 관리)
+reports/
+output/
+
+# ============================================
+# 로컬 전용 문서
+# ============================================
+NOTES.local.md
+TODO.local.md
