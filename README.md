@@ -39,10 +39,15 @@ Hermes 에이전트에게:
 ├── README.md
 ├── .env.example                # 시크릿 이름만 (값 없음)
 ├── hermes/
-│   ├── config.yaml.template    # 경로 플레이스홀더
+│   ├── config.yaml.template    # default 워커 (경로 플레이스홀더)
+│   ├── profiles/
+│   │   ├── nous-work/          # 오케 kanban 템플릿
+│   │   ├── default/            # 워커 kanban 템플릿
+│   │   └── claude/             # 워커 kanban 템플릿
 │   └── skills/                 # 이식용 스킬 (경로 정규화됨)
 └── docs/
     ├── conventions.md          # 디렉토리 / 워크플로우 규칙
+    ├── kanban-fleet.md         # 양송 플릿 dispatch / assignee
     └── images/
         ├── flow.png
         └── architecture.png
@@ -78,3 +83,4 @@ Hermes 에이전트에게:
 
 1. [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) — 실제 세팅 순서
 2. [`docs/conventions.md`](docs/conventions.md) — 디렉토리 분리·산출물 규칙
+3. [`docs/kanban-fleet.md`](docs/kanban-fleet.md) — 양송 Kanban dispatch / assignee

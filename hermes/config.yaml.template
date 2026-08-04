@@ -1,6 +1,9 @@
 # Hermes config 템플릿 — 실제 config.yaml 스키마 기반
 # 경로 플레이스홀더는 bootstrap 3단계에서 치환됨
 # 모델 API키는 config에 직접 쓰지 않고 환경변수/프로바이더 설정으로 (hermes setup)
+#
+# 이 파일 = default 프로필(워커/양파) 기준.
+# 멀티 프로필 Kanban 플릿은 hermes/profiles/*/config.yaml.template 참고.
 
 model:
   default: deepseek/deepseek-v4-flash   # 예시. 새 환경에서 hermes setup으로 선택
@@ -11,6 +14,17 @@ agent:
 terminal:
   backend: local
   cwd: .
+
+# 양송 플릿: default/claude = 워커 → dispatcher OFF (오케 nous-work만 ON)
+# 참고: hermes-kanban-fleet 패턴 (이중 디스패치 방지)
+kanban:
+  dispatch_in_gateway: false
+  dispatch_interval_seconds: 60
+  failure_limit: 2
+  default_assignee: ""
+  auto_decompose: true
+  auto_decompose_per_tick: 1
+  dispatch_stale_timeout_seconds: 14400
 
 # 스킬은 기본 위치(__HERMES_HOME__/skills)에 배치하므로 external_dirs 불필요.
 # repo의 스킬을 별도로 참조하고 싶을 때만 아래 주석 해제:

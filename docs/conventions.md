@@ -17,3 +17,11 @@
 4. **시크릿은 .env.local 하나** — 새 머신에서는 수동 입력
 5. **에이전트 완료 = complete + 결과 보고** (block/리뷰요청 금지)
 6. **custom_providers는 list-of-dicts** — dict 형식으로 쓰면 config 날아감
+
+## Kanban 플릿 (양송)
+
+- 오케 `nous-work`만 `kanban.dispatch_in_gateway: true`
+- 워커 `default` / `claude`는 `false` (이중 디스패치 방지)
+- `nous-work.kanban.default_assignee: default`
+
+상세: [`docs/kanban-fleet.md`](kanban-fleet.md)

@@ -74,15 +74,30 @@ test -d "$PROJECT_ROOT" && test -d "$E2E_ROOT/reports" && echo OK || echo FAIL
 ## 3단계: Hermes config 배치
 
 ```bash
-# 템플릿 복사 (실제 시크릿은 나중에 .env에서 채움)
+# default 워커 템플릿 (실제 시크릿은 나중에 .env에서 채움)
 cp "$BOOTSTRAP_REPO/hermes/config.yaml.template" "$HERMES_HOME/config.yaml"
+
+# 양송 플릿: 프로필별 kanban 블록 (기존 config가 있으면 kanban: 키만 머지)
+mkdir -p "$HERMES_HOME/profiles/nous-work" "$HERMES_HOME/profiles/default" "$HERMES_HOME/profiles/claude"
+# 신규 프로필만 전체 복사. 이미 config.yaml 있으면 docs/kanban-fleet.md 보고 kanban:만 패치
+test -f "$HERMES_HOME/profiles/nous-work/config.yaml" || \
+  cp "$BOOTSTRAP_REPO/hermes/profiles/nous-work/config.yaml.template" \
+     "$HERMES_HOME/profiles/nous-work/config.yaml"
 ```
+
+규칙 요약:
+
+- `nous-work` → `dispatch_in_gateway: true`, `default_assignee: default`
+- `default` / `claude` → `dispatch_in_gateway: false`
+
+상세: `docs/kanban-fleet.md`
 
 `config.yaml.template` 안의 플레이스홀더(`__E2E_ROOT__`, `__PROJECT_ROOT__`)가 **주석이 아닌 실제 설정 라인에만** 있는지 확인 후 치환한다. 현재 템플릿은 모든 경로 설정이 선택 사항(주석 처리)이라, 기본 배치는 치환 없이 복사만 합니다.
 
 **검증:**
 ```bash
 test -f "$HERMES_HOME/config.yaml" && echo OK || echo FAIL
+grep -n "dispatch_in_gateway" "$HERMES_HOME/config.yaml" || true
 ```
 
 ---
