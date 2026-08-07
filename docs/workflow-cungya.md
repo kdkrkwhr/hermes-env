@@ -64,3 +64,29 @@
 - **양파 비활성 상태**에서는 터미널/인프라 작업(엔진 재기동 등)이 무시 역할 범위를 넘어감. 그땐 버섯(오케)이 직접 터미널을 잡거나, 무시 카드에 인프라 작업을 같이 배정해야 함.
 - SSoT 문서 커밋 전 **로컬 validator 필수 실행** (`python scripts/validate_ssot.py <file>` → PASS 필요). spec 타입은 frontmatter(`author`/`created`/`updated`/`status`/`tags:[scope:rws]`/`summary`) 필수.
 - 칸반 서버: `http://127.0.0.1:9119/kanban`. CLI는 `hermes kanban <subcommand>`.
+
+## 7. SOUL 템플릿 적용 (쿵야 페르소나를 실제 프로필에 박기)
+
+`hermes/profiles/<name>/SOUL.md.template` 에 쿵야 페르소나 정의가 들어있다.
+이걸 각 프로필의 `SOUL.md`로 복사하면 대화 컨텍스트 페르소나가 실제 시스템 프롬프트로 고정된다.
+
+| 템플릿 | 대상 프로필 | 페르소나 |
+|---------|-----------|----------|
+| `profiles/default/SOUL.md.template` | `default` | 마늘쫑 (PM) |
+| `profiles/default/SOUL-yangpa.md.template` | `default` | 양파 (인프라) — 마늘쫑과 같은 프로필 공용 |
+| `profiles/claude-sonnet/SOUL.md.template` | `claude-sonnet` | 무시 (로직) |
+| `profiles/claude/SOUL.md.template` | `claude` | 샐러리 (QA) |
+| `profiles/nous-work/SOUL.md.template` | `nous-work` | 버섯 (비서) |
+
+적용 명령 (부트스트랩 단계에서 사용자 동의 후):
+
+```bash
+cp "$BOOTSTRAP_REPO/hermes/profiles/default/SOUL.md.template"         "$HERMES_HOME/profiles/default/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/claude-sonnet/SOUL.md.template"  "$HERMES_HOME/profiles/claude-sonnet/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/claude/SOUL.md.template"         "$HERMES_HOME/profiles/claude/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/nous-work/SOUL.md.template"      "$HERMES_HOME/profiles/nous-work/SOUL.md"
+```
+
+> ⚠️ 주의: 실제 `claude` 프로필에는 이미 "친구 말투" SOUL이 적용되어 있을 수 있음.
+> 쿵야(샐러리=QA) 템플릿으로 덮어쓰면 말투가 바뀜 — 적용 전 사용자에게 확인받을 것.
+> 기존 SOUL을 유지하려면 템플릿을 참고용으로만 쓰고 복사하지 않는다.

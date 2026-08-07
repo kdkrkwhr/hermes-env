@@ -98,6 +98,17 @@ test -f "$HERMES_HOME/profiles/nous-work/config.yaml" || \
 
 상세: `docs/kanban-fleet.md`, `docs/workflow-cungya.md`
 
+## 3-1단계: 쿵야 페르소나 SOUL 배치 (선택)
+
+워크플로우 문서(`docs/workflow-cungya.md` §7)의 쿵야 페르소나를 실제 시스템 프롬프트로 박으려면, 각 프로필의 `SOUL.md`에 템플릿을 복사한다. **기존 SOUL을 덮어쓰므로 적용 전 사용자 동의 필수** (특히 `claude` 프로필은 이미 "친구 말투" SOUL일 수 있음).
+
+```bash
+cp "$BOOTSTRAP_REPO/hermes/profiles/default/SOUL.md.template"        "$HERMES_HOME/profiles/default/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/claude-sonnet/SOUL.md.template" "$HERMES_HOME/profiles/claude-sonnet/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/claude/SOUL.md.template"        "$HERMES_HOME/profiles/claude/SOUL.md"
+cp "$BOOTSTRAP_REPO/hermes/profiles/nous-work/SOUL.md.template"     "$HERMES_HOME/profiles/nous-work/SOUL.md"
+```
+
 `config.yaml.template` 안의 플레이스홀더(`__E2E_ROOT__`, `__PROJECT_ROOT__`)가 **주석이 아닌 실제 설정 라인에만** 있는지 확인 후 치환한다. 현재 템플릿은 모든 경로 설정이 선택 사항(주석 처리)이라, 기본 배치는 치환 없이 복사만 합니다.
 
 **검증:**
