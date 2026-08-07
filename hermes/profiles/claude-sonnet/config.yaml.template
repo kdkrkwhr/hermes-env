@@ -1,0 +1,15 @@
+# claude-sonnet — Kanban 워커 (무시쿵야: 알고리즘/로직/아키텍처)
+# 디스패처는 nous-work만 돌림. 이 프로필은 spawn only.
+
+# toolsets:
+#   - hermes-cli
+#   - kanban
+
+kanban:
+  dispatch_in_gateway: false
+  dispatch_interval_seconds: 60
+  failure_limit: 2
+  default_assignee: ""
+  auto_decompose: true
+  auto_decompose_per_tick: 3
+  dispatch_stale_timeout_seconds: 14400

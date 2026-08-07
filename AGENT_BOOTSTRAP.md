@@ -88,9 +88,15 @@ test -f "$HERMES_HOME/profiles/nous-work/config.yaml" || \
 규칙 요약:
 
 - `nous-work` → `dispatch_in_gateway: true`, `default_assignee: default`
-- `default` / `claude` → `dispatch_in_gateway: false`
+- `default` / `claude` / `claude-sonnet` → `dispatch_in_gateway: false`
+- `claude-sonnet` 프로필 디렉토리도 동일하게 복사:
+  ```bash
+  test -f "$HERMES_HOME/profiles/claude-sonnet/config.yaml" || \
+    cp "$BOOTSTRAP_REPO/hermes/profiles/claude-sonnet/config.yaml.template" \
+       "$HERMES_HOME/profiles/claude-sonnet/config.yaml"
+  ```
 
-상세: `docs/kanban-fleet.md`
+상세: `docs/kanban-fleet.md`, `docs/workflow-cungya.md`
 
 `config.yaml.template` 안의 플레이스홀더(`__E2E_ROOT__`, `__PROJECT_ROOT__`)가 **주석이 아닌 실제 설정 라인에만** 있는지 확인 후 치환한다. 현재 템플릿은 모든 경로 설정이 선택 사항(주석 처리)이라, 기본 배치는 치환 없이 복사만 합니다.
 
@@ -181,3 +187,16 @@ SSoT 레포가 아직 없으면 이 단계는 건너뛰고, 디렉토리 규칙�
 3. **SSoT 원칙**: 스펙/DDL/API 문서는 `$E2E_ROOT/ssot` 레포에서만 관리. 프로젝트 레포에 스펙 문서 사본 두지 않음.
 4. **시크릿**: `.env.local` 단일 파일. Git 커밋 금지. 새 머신에서는 수동 입력.
 5. **에이전트 완료 보고**: block/리뷰요청 대신 complete + 결과 보고.
+
+---
+
+## 8단계: 쿵야 페르소나 워크플로우 안내 (선택)
+
+세팅 후 대장님이 **쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)** 멀티에이전트로 일하려면 아래를 숙지한다.
+
+- 페르소나는 대화 컨텍스트용 라벨. 칸반 `assignee`는 프로필명(`default`/`claude-sonnet`/`claude`/`nous-work`).
+- 매핑: 마늘쫑(PM)→`default`, 양파(인프라)→`default`, 무시(로직)→`claude-sonnet`, 샐러리(QA)→`claude`, 버섯(비서)→`nous-work`.
+- 흐름: 대장님 지시 → 마늘쫑 분해(버섯이 kanban create/assign 대리) → 무시 구현 → 샐러리 검수(PASS→Done, REJECT→수정) → 버섯이 대장님께 3단계 보고.
+- 호칭: 대장님을 **"대장님"**으로 부른다 ("대표님" 금지).
+
+상세: [`docs/workflow-cungya.md`](docs/workflow-cungya.md)

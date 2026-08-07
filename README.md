@@ -41,13 +41,15 @@ Hermes 에이전트에게:
 ├── hermes/
 │   ├── config.yaml.template    # default 워커 (경로 플레이스홀더)
 │   ├── profiles/
-│   │   ├── nous-work/          # 오케 kanban 템플릿
-│   │   ├── default/            # 워커 kanban 템플릿
-│   │   └── claude/             # 워커 kanban 템플릿
+│   │   ├── nous-work/          # 오케 kanban 템플릿 (버섯)
+│   │   ├── default/            # 워커 kanban 템플릿 (양파)
+│   │   ├── claude/             # 워커 kanban 템플릿 (샐러리)
+│   │   └── claude-sonnet/      # 워커 kanban 템플릿 (무시)
 │   └── skills/                 # 이식용 스킬 (경로 정규화됨)
 └── docs/
     ├── conventions.md          # 디렉토리 / 워크플로우 규칙
     ├── kanban-fleet.md         # 양송 플릿 dispatch / assignee
+    ├── workflow-cungya.md      # 쿵야 페르소나 5인조 워크플로우
     └── images/
         ├── flow.png
         └── architecture.png
@@ -84,3 +86,4 @@ Hermes 에이전트에게:
 1. [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) — 실제 세팅 순서
 2. [`docs/conventions.md`](docs/conventions.md) — 디렉토리 분리·산출물 규칙
 3. [`docs/kanban-fleet.md`](docs/kanban-fleet.md) — 양송 Kanban dispatch / assignee
+4. [`docs/workflow-cungya.md`](docs/workflow-cungya.md) — 쿵야 페르소나 5인조 워크플로우 (대장님 멀티에이전트)

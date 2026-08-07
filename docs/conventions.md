@@ -21,7 +21,22 @@
 ## Kanban 플릿 (양송)
 
 - 오케 `nous-work`만 `kanban.dispatch_in_gateway: true`
-- 워커 `default` / `claude`는 `false` (이중 디스패치 방지)
+- 워커 `default` / `claude` / `claude-sonnet`는 `false` (이중 디스패치 방지)
 - `nous-work.kanban.default_assignee: default`
 
 상세: [`docs/kanban-fleet.md`](kanban-fleet.md)
+
+## 쿵야 페르소나 워크플로우
+
+대장님이 쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)로 일하는 멀티에이전트 흐름.
+페르소나는 대화 컨텍스트 전용 라벨이고, 칸반 assignee는 프로필명(`default`/`claude-sonnet`/`claude`/`nous-work`)이다.
+
+| 페르소나 | 칸반 assignee | 프로필 | 모델 |
+|----------|---------------|--------|------|
+| 마늘쫑 (PM) | `default` | 버섯 대리 | — |
+| 양파 (인프라) | `default` | `default` | 환경별 |
+| 무시 (로직) | `claude-sonnet` | `claude-sonnet` | claude-sonnet-5 |
+| 샐러리 (QA) | `claude` | `claude` | claude-opus-5 |
+| 버섯 (비서) | `nous-work` | `nous-work` | 오케 |
+
+상세: [`docs/workflow-cungya.md`](workflow-cungya.md)
