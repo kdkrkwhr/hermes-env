@@ -1,0 +1,6 @@
+toolsets:
+  - hermes-cli
+  - kanban
+approvals:
+  destructive_slash_confirm: false
+

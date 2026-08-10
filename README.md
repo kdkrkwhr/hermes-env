@@ -39,16 +39,17 @@ Hermes 에이전트에게:
 ├── README.md
 ├── .env.example                # 시크릿 이름만 (값 없음)
 ├── hermes/
-│   ├── config.yaml.template    # default 워커 (경로 플레이스홀더)
+│   ├── config.yaml.template    # default 워커 (워크플로우 전용, 모델/프로바이더 제외)
 │   ├── profiles/
-│   │   ├── nous-work/          # 오케 kanban 템플릿 (버섯)
-│   │   ├── default/            # 워커 kanban 템플릿 (양파)
-│   │   ├── claude/             # 워커 kanban 템플릿 (샐러리)
-│   │   └── claude-sonnet/      # 워커 kanban 템플릿 (무시)
+│   │   ├── pm/                 # 마늘쫑(PM) — SOUL + kanban 템플릿
+│   │   ├── dev/                # 양파(개발 리드) — SOUL + config 템플릿
+│   │   ├── infra/              # 무시(인프라) — SOUL + config 템플릿
+│   │   ├── qa/                 # 샐러리(QA) — SOUL + config 템플릿(토론 규칙 포함)
+│   │   └── ops/                # 버섯(비서/디스패처) — SOUL + kanban 템플릿
 │   └── skills/                 # 이식용 스킬 (경로 정규화됨)
 └── docs/
     ├── conventions.md          # 디렉토리 / 워크플로우 규칙
-    ├── kanban-fleet.md         # 양송 플릿 dispatch / assignee
+    ├── kanban-fleet.md         # 쿵야 5인조 dispatch / assignee
     ├── workflow-cungya.md      # 쿵야 페르소나 5인조 워크플로우
     └── images/
         ├── flow.png
@@ -60,7 +61,7 @@ Hermes 에이전트에게:
 | 포함 | 미포함 |
 |------|--------|
 | 부트스트랩 체크리스트 | 프로젝트 코드 |
-| config 템플릿 | SSoT 문서 본문 |
+| config 워크플로우 템플릿(kanban/discord/SOUL 등) | 모델명·프로바이더·API키 |
 | 이식용 스킬 세트 | 에이전트 메모리 |
 | 컨벤션 문서 | `.env` 실제 값 |
 | 플로우 / 배치 다이어그램 | 특정 PC 하드코딩 경로 |

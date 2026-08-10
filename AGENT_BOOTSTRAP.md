@@ -74,27 +74,23 @@ test -d "$PROJECT_ROOT" && test -d "$E2E_ROOT/reports" && echo OK || echo FAIL
 ## 3단계: Hermes config 배치
 
 ```bash
-# default 워커 템플릿 (실제 시크릿은 나중에 .env에서 채움)
+# default 워커 템플릿 (모델/프로바이더는 hermes setup 또는 .env로 세팅)
 cp "$BOOTSTRAP_REPO/hermes/config.yaml.template" "$HERMES_HOME/config.yaml"
 
-# 양송 플릿: 프로필별 kanban 블록 (기존 config가 있으면 kanban: 키만 머지)
-mkdir -p "$HERMES_HOME/profiles/nous-work" "$HERMES_HOME/profiles/default" "$HERMES_HOME/profiles/claude"
-# 신규 프로필만 전체 복사. 이미 config.yaml 있으면 docs/kanban-fleet.md 보고 kanban:만 패치
-test -f "$HERMES_HOME/profiles/nous-work/config.yaml" || \
-  cp "$BOOTSTRAP_REPO/hermes/profiles/nous-work/config.yaml.template" \
-     "$HERMES_HOME/profiles/nous-work/config.yaml"
+# 쿵야 5인조 플릿: 프로필별 kanban 블록 (기존 config가 있으면 kanban: 키만 머지)
+for p in pm dev infra qa ops; do
+  mkdir -p "$HERMES_HOME/profiles/$p"
+  test -f "$HERMES_HOME/profiles/$p/config.yaml" || \
+    cp "$BOOTSTRAP_REPO/hermes/profiles/$p/config.yaml.template" \
+       "$HERMES_HOME/profiles/$p/config.yaml"
+done
 ```
 
 규칙 요약:
 
-- `nous-work` → `dispatch_in_gateway: true`, `default_assignee: default`
-- `default` / `claude` / `claude-sonnet` → `dispatch_in_gateway: false`
-- `claude-sonnet` 프로필 디렉토리도 동일하게 복사:
-  ```bash
-  test -f "$HERMES_HOME/profiles/claude-sonnet/config.yaml" || \
-    cp "$BOOTSTRAP_REPO/hermes/profiles/claude-sonnet/config.yaml.template" \
-       "$HERMES_HOME/profiles/claude-sonnet/config.yaml"
-  ```
+- `ops` (버섯) → `dispatch_in_gateway: true`, `default_assignee: pm` (유일 디스패처)
+- `pm` / `dev` / `infra` / `qa` → `dispatch_in_gateway: false`
+- 모델/프로바이더는 이 repo에 없음. 새 머신에서 `hermes setup` 또는 `.env`(`OPENROUTER_API_KEY` 등)로 세팅.
 
 상세: `docs/kanban-fleet.md`, `docs/workflow-cungya.md`
 
@@ -103,10 +99,9 @@ test -f "$HERMES_HOME/profiles/nous-work/config.yaml" || \
 워크플로우 문서(`docs/workflow-cungya.md` §7)의 쿵야 페르소나를 실제 시스템 프롬프트로 박으려면, 각 프로필의 `SOUL.md`에 템플릿을 복사한다. **기존 SOUL을 덮어쓰므로 적용 전 사용자 동의 필수** (특히 `claude` 프로필은 이미 "친구 말투" SOUL일 수 있음).
 
 ```bash
-cp "$BOOTSTRAP_REPO/hermes/profiles/default/SOUL.md.template"        "$HERMES_HOME/profiles/default/SOUL.md"
-cp "$BOOTSTRAP_REPO/hermes/profiles/claude-sonnet/SOUL.md.template" "$HERMES_HOME/profiles/claude-sonnet/SOUL.md"
-cp "$BOOTSTRAP_REPO/hermes/profiles/claude/SOUL.md.template"        "$HERMES_HOME/profiles/claude/SOUL.md"
-cp "$BOOTSTRAP_REPO/hermes/profiles/nous-work/SOUL.md.template"     "$HERMES_HOME/profiles/nous-work/SOUL.md"
+for p in pm dev infra qa ops; do
+  cp "$BOOTSTRAP_REPO/hermes/profiles/$p/SOUL.md.template" "$HERMES_HOME/profiles/$p/SOUL.md"
+done
 ```
 
 `config.yaml.template` 안의 플레이스홀더(`__E2E_ROOT__`, `__PROJECT_ROOT__`)가 **주석이 아닌 실제 설정 라인에만** 있는지 확인 후 치환한다. 현재 템플릿은 모든 경로 설정이 선택 사항(주석 처리)이라, 기본 배치는 치환 없이 복사만 합니다.
@@ -205,9 +200,9 @@ SSoT 레포가 아직 없으면 이 단계는 건너뛰고, 디렉토리 규칙�
 
 세팅 후 대장님이 **쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)** 멀티에이전트로 일하려면 아래를 숙지한다.
 
-- 페르소나는 대화 컨텍스트용 라벨. 칸반 `assignee`는 프로필명(`default`/`claude-sonnet`/`claude`/`nous-work`).
-- 매핑: 마늘쫑(PM)→`default`, 양파(인프라)→`default`, 무시(로직)→`claude-sonnet`, 샐러리(QA)→`claude`, 버섯(비서)→`nous-work`.
-- 흐름: 대장님 지시 → 마늘쫑 분해(버섯이 kanban create/assign 대리) → 무시 구현 → 샐러리 검수(PASS→Done, REJECT→수정) → 버섯이 대장님께 3단계 보고.
+- 페르소나는 대화 컨텍스트용 라벨. 칸반 `assignee`는 프로필명(`pm`/`dev`/`infra`/`qa`/`ops`).
+- 매핑: 마늘쫑(PM)→`pm`, 양파(개발)→`dev`, 무시(인프라)→`infra`, 샐러리(QA)→`qa`, 버섯(비서/디스패처)→`ops`.
+- 흐름: 대장님 지시 → 마늘쫑(pm) 분해·배정(버섯이 kanban create/assign 대리) → 양파(dev)+무시(infra) 구현 → 샐러리(qa) 검수(PASS→Done, REJECT→수정) → 버섯(ops)이 대장님께 3단계 보고.
 - 호칭: 대장님을 **"대장님"**으로 부른다 ("대표님" 금지).
 
 상세: [`docs/workflow-cungya.md`](docs/workflow-cungya.md)

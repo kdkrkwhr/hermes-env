@@ -17,26 +17,27 @@
 4. **시크릿은 .env.local 하나** — 새 머신에서는 수동 입력
 5. **에이전트 완료 = complete + 결과 보고** (block/리뷰요청 금지)
 6. **custom_providers는 list-of-dicts** — dict 형식으로 쓰면 config 날아감
+7. **모델/프로바이더 정보는 이 repo에 넣지 않음** — 환경 의존/시크릿. `hermes setup` 또는 `.env`로 세팅
 
-## Kanban 플릿 (양송)
+## Kanban 플릿 (쿵야 5인조)
 
-- 오케 `nous-work`만 `kanban.dispatch_in_gateway: true`
-- 워커 `default` / `claude` / `claude-sonnet`는 `false` (이중 디스패치 방지)
-- `nous-work.kanban.default_assignee: default`
+- 디스패처 `ops`만 `kanban.dispatch_in_gateway: true`
+- 워커 `pm` / `dev` / `infra` / `qa`는 `false` (이중 디스패치 방지)
+- `ops.kanban.default_assignee: pm`
 
 상세: [`docs/kanban-fleet.md`](kanban-fleet.md)
 
 ## 쿵야 페르소나 워크플로우
 
 대장님이 쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)로 일하는 멀티에이전트 흐름.
-페르소나는 대화 컨텍스트 전용 라벨이고, 칸반 assignee는 프로필명(`default`/`claude-sonnet`/`claude`/`nous-work`)이다.
+페르소나는 대화 컨텍스트 전용 라벨이고, 칸반 assignee는 프로필명(`pm`/`dev`/`infra`/`qa`/`ops`)이다.
 
-| 페르소나 | 칸반 assignee | 프로필 | 모델 |
-|----------|---------------|--------|------|
-| 마늘쫑 (PM) | `default` | 버섯 대리 | — |
-| 양파 (인프라) | `default` | `default` | 환경별 |
-| 무시 (로직) | `claude-sonnet` | `claude-sonnet` | claude-sonnet-5 |
-| 샐러리 (QA) | `claude` | `claude` | claude-opus-5 |
-| 버섯 (비서) | `nous-work` | `nous-work` | 오케 |
+| 페르소나 | 칸반 assignee | 프로필 |
+|----------|---------------|--------|
+| 마늘쫑 (PM) | `pm` | `pm` |
+| 양파 (개발 리드) | `dev` | `dev` |
+| 무시 (인프라) | `infra` | `infra` |
+| 샐러리 (QA) | `qa` | `qa` |
+| 버섯 (비서/디스패처) | `ops` | `ops` |
 
 상세: [`docs/workflow-cungya.md`](workflow-cungya.md)

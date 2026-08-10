@@ -1,8 +1,3 @@
-# Hermes config 워크플로우 템플릿 (모델/프로바이더/시크릿 제외)
-# 실제 배포 시: 모델/프로바이더는 hermes setup 또는 .env로 세팅.
-# 절대경로는 __E2E_ROOT__ 플레이스홀더로 정규화.
-# 상세 워크플로우: docs/workflow-cungya.md, docs/kanban-fleet.md
-
 toolsets:
   - hermes-cli
   - kanban
