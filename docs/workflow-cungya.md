@@ -9,14 +9,19 @@
 | 페르소나 | 정체성 | Kanban 담당자(assignee) | 실제 Hermes 프로필 | 모델 |
 |----------|--------|--------------------------|---------------------|------|
 | **마늘쫑쿵야** | PM / 아키텍트 (요구사항 분해) | `default` | (버섯이 대리 수행) | — |
-| **양파쿵야** | API / 터미널 / 인프라 | `default` | `default` | 환경별 |
-| **무시쿵야** | 알고리즘 / 로직 / 아키텍처 | `claude-sonnet` | `claude-sonnet` | claude-sonnet-5 |
-| **샐러리쿵야** | QA 수문장 (검수 PASS/REJECT) | `claude` | `claude` | claude-opus-5 |
-| **버섯쿵야** | 비서 / 보고 (칸반 모니터링) | `nous-work` | `nous-work` | 오케(디스패처) |
+| **양파쿵야** | **프론트엔드 + 백엔드 개발자** (실제 코딩 구현) | `default` | `default` (Cursor ACP 경유) | Cursor 구독 / ACP |
+| **무시쿵야** | **인프라 개발자** (인프라 설정/구축/배포) | `claude-sonnet` | `claude-sonnet` | 무료모델(gemini/hy3) 전환 예정 |
+| **샐러리쿵야** | QA 수문장 (검수 PASS/REJECT) | `claude` | `claude` | claude-1개 유지(유료) 또는 무료모델 |
+| **버섯쿵야** | 비서 / 보고 (칸반 모니터링) | `nous-work` | `nous-work` | 오케(디스패처, hy3) |
 
 > ⚠️ **중요**: 마늘쫑·양파·무시·샐러리·버섯은 **대화 컨텍스트에서만 존재하는 페르소나**다.
 > 칸반의 `assignee` 값은 프로필명(`default`/`claude-sonnet`/`claude`/`nous-work`)이고,
 > 페르소나 이름은 브리핑·보고용 라벨이다. config에 "마늘쫑" 같은 문자열은 없다.
+
+> 📌 **역할 재정의 이력 (2026-08-10)**:
+> - **양파쿵야**: 기존(인프라/API/터미널) → **프론트엔드+백엔드 개발자** (실제 코딩 구현 담당)
+> - **무시쿵야**: 기존(알고리즘/로직/아키) → **인프라 개발자** (인프라 설정/구축/배포)
+> - 코딩 구현은 양파가, 인프라 세팅은 무시가, QA는 샐러리가, 기획은 마늘쫑이, 비서는 버섯이 담당.
 
 ## 2. 흐름 (요구사항 1건 처리 기준)
 
@@ -26,7 +31,9 @@
 [마늘쫑] 요구사항 분석 → 칸반 카드 분해 + 담당 배정
    (실제: 버섯=오케가 hermes kanban create/assign 로 실행)
    ↓
-[무시] claude-sonnet 프로필에서 코딩/구현
+[무시] 인프라 개발자 — 인프라 설정/구축 (claude-sonnet 프로필, 무료모델 전환 예정)
+   ↓
+[양파] 프론트엔드+백엔드 개발자 — 실제 코딩 구현 (Cursor ACP 경유)
    ↓
 [샐러리] claude 프로필에서 검수
    PASS  → 칸반 Done + 버섯에게 이관
@@ -46,9 +53,9 @@
 | 프로필 | `dispatch_in_gateway` | `default_assignee` | 역할 |
 |--------|----------------------|--------------------|------|
 | `nous-work` (버섯) | **true** (유일) | `default` | 유일 디스패처 |
-| `claude-sonnet` (무시) | false | (미사용) | spawn only |
-| `claude` (샐러리) | false | (미사용) | spawn only |
-| `default` (양파) | false | (미사용) | spawn only |
+| `claude-sonnet` (무시=인프라) | false | (미사용) | spawn only / 무료모델 전환 예정 |
+| `claude` (샐러리=QA) | false | (미사용) | spawn only / claude-1개 유지 |
+| `default` (양파=개발) | false | (미사용) | spawn only / Cursor ACP 경유 |
 
 - 게이트웨이 여러 개 켜면 디스패처 이중 스윕 → claim 꼬임. 디스패처는 `nous-work` 하나만.
 - `auto_decompose: true` 유지 → 버섯이 채팅에서 카드를 자동 분해.
@@ -61,7 +68,10 @@
 ## 6. 알려진 리스크 / 운영 주의
 
 - **②단계 폴링은 Discord 세션이 살아있을 때만 작동**. 끊기면 놓침 → `kanban daemon` 또는 cron으로 빼야 24h 모니터링.
-- **양파 비활성 상태**에서는 터미널/인프라 작업(엔진 재기동 등)이 무시 역할 범위를 넘어감. 그땐 버섯(오케)이 직접 터미널을 잡거나, 무시 카드에 인프라 작업을 같이 배정해야 함.
+- **양파(Cursor ACP)는 Hermes 토큰을 안 씀** — Cursor 구독비 별도. Hermes에서 ACP로 툴 등록만 함. 양파가 "코딩"하면 비용은 Cursor 측에서 감.
+- **무시(인프라)는 무료 모델(gemini-2.0-flash / hy3)로 전환 예정** — claude-sonnet 요금 소진(2026-08-10)으로 인해. OpenRouter(`OPENROUTER_API_KEY`) 또는 Gemini(`GEMINI_API_KEY`) 키 발급 후 `config.yaml` model 교체.
+- **샐러리(QA)는 claude 1개 유지 원칙** 이나, claude 요금 소진 시 무료 모델(gemini-2.0-flash)로 QA 우회 가능. 정밀 리뷰 필요시에만 claude 사용.
+- **OpenRouter는 Hermes 공식 지원** — `.env`에 `OPENROUTER_API_KEY` 세팅 + `config.yaml` 에 `provider: openrouter`, `default: openrouter/<vendor>/<model>` 형식 사용. 무료 태그는 `:free`.
 - SSoT 문서 커밋 전 **로컬 validator 필수 실행** (`python scripts/validate_ssot.py <file>` → PASS 필요). spec 타입은 frontmatter(`author`/`created`/`updated`/`status`/`tags:[scope:rws]`/`summary`) 필수.
 - 칸반 서버: `http://127.0.0.1:9119/kanban`. CLI는 `hermes kanban <subcommand>`.
 
