@@ -77,7 +77,7 @@ test -d "$PROJECT_ROOT" && test -d "$E2E_ROOT/reports" && echo OK || echo FAIL
 # default 워커 템플릿 (모델/프로바이더는 hermes setup 또는 .env로 세팅)
 cp "$BOOTSTRAP_REPO/hermes/config.yaml.template" "$HERMES_HOME/config.yaml"
 
-# 쿵야 5인조 플릿: 프로필별 kanban 블록 (기존 config가 있으면 kanban: 키만 머지)
+# 5인조 멀티에이전트 플릿: 프로필별 kanban 블록 (기존 config가 있으면 kanban: 키만 머지)
 for p in pm dev infra qa ops; do
   mkdir -p "$HERMES_HOME/profiles/$p"
   test -f "$HERMES_HOME/profiles/$p/config.yaml" || \
@@ -88,15 +88,15 @@ done
 
 규칙 요약:
 
-- `ops` (버섯) → `dispatch_in_gateway: true`, `default_assignee: pm` (유일 디스패처)
+- `ops` (Ops) → `dispatch_in_gateway: true`, `default_assignee: pm` (유일 디스패처)
 - `pm` / `dev` / `infra` / `qa` → `dispatch_in_gateway: false`
 - 모델/프로바이더는 이 repo에 없음. 새 머신에서 `hermes setup` 또는 `.env`(`OPENROUTER_API_KEY` 등)로 세팅.
 
 상세: `docs/kanban-fleet.md`, `docs/workflow-cungya.md`
 
-## 3-1단계: 쿵야 페르소나 SOUL 배치 (선택)
+## 3-1단계: 역할별 페르소나 SOUL 배치 (선택)
 
-워크플로우 문서(`docs/workflow-cungya.md` §7)의 쿵야 페르소나를 실제 시스템 프롬프트로 박으려면, 각 프로필의 `SOUL.md`에 템플릿을 복사한다. **기존 SOUL을 덮어쓰므로 적용 전 사용자 동의 필수** (특히 `claude` 프로필은 이미 "친구 말투" SOUL일 수 있음).
+워크플로우 문서(`docs/workflow-cungya.md` §7)의 역할별 페르소나를 실제 시스템 프롬프트로 박으려면, 각 프로필의 `SOUL.md`에 템플릿을 복사한다. **기존 SOUL을 덮어쓰므로 적용 전 사용자 동의 필수** (특히 `claude` 프로필은 이미 "친구 말투" SOUL일 수 있음).
 
 ```bash
 for p in pm dev infra qa ops; do
@@ -196,13 +196,13 @@ SSoT 레포가 아직 없으면 이 단계는 건너뛰고, 디렉토리 규칙�
 
 ---
 
-## 8단계: 쿵야 페르소나 워크플로우 안내 (선택)
+## 8단계: 역할별 페르소나 워크플로우 안내 (선택)
 
-세팅 후 대장님이 **쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)** 멀티에이전트로 일하려면 아래를 숙지한다.
+세팅 후 대장님이 **5인조 멀티에이전트(PM/Dev/Infra/QA/Ops)** 멀티에이전트로 일하려면 아래를 숙지한다.
 
 - 페르소나는 대화 컨텍스트용 라벨. 칸반 `assignee`는 프로필명(`pm`/`dev`/`infra`/`qa`/`ops`).
-- 매핑: 마늘쫑(PM)→`pm`, 양파(개발)→`dev`, 무시(인프라)→`infra`, 샐러리(QA)→`qa`, 버섯(비서/디스패처)→`ops`.
-- 흐름: 대장님 지시 → 마늘쫑(pm) 분해·배정(버섯이 kanban create/assign 대리) → 양파(dev)+무시(infra) 구현 → 샐러리(qa) 검수(PASS→Done, REJECT→수정) → 버섯(ops)이 대장님께 3단계 보고.
+- 매핑: PM(PM)→`pm`, Dev(개발)→`dev`, Infra(인프라)→`infra`, QA(QA)→`qa`, Ops(비서/디스패처)→`ops`.
+- 흐름: 대장님 지시 → PM(pm) 분해·배정(Ops이 kanban create/assign 대리) → Dev(dev)+Infra(infra) 구현 → QA(qa) 검수(PASS→Done, REJECT→수정) → Ops(ops)이 대장님께 3단계 보고.
 - 호칭: 대장님을 **"대장님"**으로 부른다 ("대표님" 금지).
 
 상세: [`docs/workflow-cungya.md`](docs/workflow-cungya.md)

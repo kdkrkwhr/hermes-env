@@ -1,4 +1,4 @@
-# Kanban 플릿 설정 (쿵야 5인조)
+# Kanban 플릿 설정 (5인조 멀티에이전트)
 
 출처: `hermes-kanban-fleet`에서 훔친 최소 설정. 프로필 이름 갈아엎지 말고 **dispatch / default_assignee만** 맞춘다.
 
@@ -6,17 +6,17 @@
 
 | 프로필 | 페르소나 | `dispatch_in_gateway` | `default_assignee` |
 |--------|----------|------------------------|--------------------|
-| `ops` | 버섯(비서/디스패처) | **true** (유일) | **`pm`** |
-| `pm` | 마늘쫑(PM) | **false** | (미사용) |
-| `dev` | 양파(개발) | **false** | (미사용) |
-| `infra` | 무시(인프라) | **false** | (미사용) |
-| `qa` | 샐러리(QA) | **false** | (미사용) |
+| `ops` | Ops(비서/디스패처) | **true** (유일) | **`pm`** |
+| `pm` | PM(PM) | **false** | (미사용) |
+| `dev` | Dev(개발) | **false** | (미사용) |
+| `infra` | Infra(인프라) | **false** | (미사용) |
+| `qa` | QA(QA) | **false** | (미사용) |
 
 ## 왜
 
 - 게이트웨이 여러 개 켤 때 디스패처가 **이중 스윕**하면 claim/꼬임 난다.
 - `default_assignee: ""`면 분해기가 이상한 assignee를 찍고 카드가 `ready`에 영원히 남을 수 있다.
-- `ops`가 유일 디스패처 → 카드를 `pm`(마늘쫑)에게 우선 배정, 마늘쫑이 세부 담당자(`dev`/`infra`/`qa`)로 재배정.
+- `ops`가 유일 디스패처 → 카드를 `pm`(PM)에게 우선 배정, PM이 세부 담당자(`dev`/`infra`/`qa`)로 재배정.
 
 ## 적용
 

@@ -19,7 +19,7 @@
 6. **custom_providers는 list-of-dicts** — dict 형식으로 쓰면 config 날아감
 7. **모델/프로바이더 정보는 이 repo에 넣지 않음** — 환경 의존/시크릿. `hermes setup` 또는 `.env`로 세팅
 
-## Kanban 플릿 (쿵야 5인조)
+## Kanban 플릿 (5인조 멀티에이전트)
 
 - 디스패처 `ops`만 `kanban.dispatch_in_gateway: true`
 - 워커 `pm` / `dev` / `infra` / `qa`는 `false` (이중 디스패치 방지)
@@ -27,17 +27,17 @@
 
 상세: [`docs/kanban-fleet.md`](kanban-fleet.md)
 
-## 쿵야 페르소나 워크플로우
+## 역할별 페르소나 워크플로우
 
-대장님이 쿵야 5인조(마늘쫑/양파/무시/샐러리/버섯)로 일하는 멀티에이전트 흐름.
+대장님이 5인조 멀티에이전트(PM/Dev/Infra/QA/Ops)로 일하는 멀티에이전트 흐름.
 페르소나는 대화 컨텍스트 전용 라벨이고, 칸반 assignee는 프로필명(`pm`/`dev`/`infra`/`qa`/`ops`)이다.
 
 | 페르소나 | 칸반 assignee | 프로필 |
 |----------|---------------|--------|
-| 마늘쫑 (PM) | `pm` | `pm` |
-| 양파 (개발 리드) | `dev` | `dev` |
-| 무시 (인프라) | `infra` | `infra` |
-| 샐러리 (QA) | `qa` | `qa` |
-| 버섯 (비서/디스패처) | `ops` | `ops` |
+| PM (PM) | `pm` | `pm` |
+| Dev (개발 리드) | `dev` | `dev` |
+| Infra (인프라) | `infra` | `infra` |
+| QA (QA) | `qa` | `qa` |
+| Ops (비서/디스패처) | `ops` | `ops` |
 
 상세: [`docs/workflow-cungya.md`](workflow-cungya.md)

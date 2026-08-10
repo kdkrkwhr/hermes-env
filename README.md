@@ -41,16 +41,16 @@ Hermes 에이전트에게:
 ├── hermes/
 │   ├── config.yaml.template    # default 워커 (워크플로우 전용, 모델/프로바이더 제외)
 │   ├── profiles/
-│   │   ├── pm/                 # 마늘쫑(PM) — SOUL + kanban 템플릿
-│   │   ├── dev/                # 양파(개발 리드) — SOUL + config 템플릿
-│   │   ├── infra/              # 무시(인프라) — SOUL + config 템플릿
-│   │   ├── qa/                 # 샐러리(QA) — SOUL + config 템플릿(토론 규칙 포함)
-│   │   └── ops/                # 버섯(비서/디스패처) — SOUL + kanban 템플릿
+│   │   ├── pm/                 # PM(프로젝트 매니저) — SOUL + kanban 템플릿
+│   │   ├── dev/                # Dev(개발 리드) — SOUL + config 템플릿
+│   │   ├── infra/              # Infra(인프라) — SOUL + config 템플릿
+│   │   ├── qa/                 # QA(검수) — SOUL + config 템플릿(토론 규칙 포함)
+│   │   └── ops/                # Ops(비서/디스패처) — SOUL + kanban 템플릿
 │   └── skills/                 # 이식용 스킬 (경로 정규화됨)
 └── docs/
     ├── conventions.md          # 디렉토리 / 워크플로우 규칙
-    ├── kanban-fleet.md         # 쿵야 5인조 dispatch / assignee
-    ├── workflow-cungya.md      # 쿵야 페르소나 5인조 워크플로우
+    ├── kanban-fleet.md         # 5인조 멀티에이전트 dispatch / assignee
+    ├── workflow-cungya.md      # 역할별 페르소나 5인조 워크플로우
     └── images/
         ├── flow.png
         └── architecture.png
@@ -87,4 +87,4 @@ Hermes 에이전트에게:
 1. [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) — 실제 세팅 순서
 2. [`docs/conventions.md`](docs/conventions.md) — 디렉토리 분리·산출물 규칙
 3. [`docs/kanban-fleet.md`](docs/kanban-fleet.md) — 양송 Kanban dispatch / assignee
-4. [`docs/workflow-cungya.md`](docs/workflow-cungya.md) — 쿵야 페르소나 5인조 워크플로우 (대장님 멀티에이전트)
+4. [`docs/workflow-cungya.md`](docs/workflow-cungya.md) — 역할별 페르소나 5인조 워크플로우 (대장님 멀티에이전트)
