@@ -51,7 +51,7 @@
 
 | 프로필 | `dispatch_in_gateway` | `default_assignee` | 역할 |
 |--------|----------------------|--------------------|------|
-| `ops` (Ops) | **true** (유일) | `pm` | 유일 디스패처 |
+| `ops` (버섯) | **true** (유일) | `pm` | 유일 디스패처 |
 | `pm` (PM) | false | (미사용) | spawn / 분해 |
 | `dev` (Dev) | false | (미사용) | spawn only |
 | `infra` (Infra) | false | (미사용) | spawn only |
