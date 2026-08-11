@@ -46,11 +46,13 @@ Hermes 에이전트에게:
 │   │   ├── infra/              # Infra(인프라) — SOUL + config 템플릿
 │   │   ├── qa/                 # QA(검수) — SOUL + config 템플릿(토론 규칙 포함)
 │   │   └── ops/                # Ops(비서/디스패처) — SOUL + kanban 템플릿
+│   ├── coral/                  # AgentRadio/Coral 실시간 peer 연동 (설치·셋업·autostart)
 │   └── skills/                 # 이식용 스킬 (경로 정규화됨)
 └── docs/
     ├── conventions.md          # 디렉토리 / 워크플로우 규칙
     ├── kanban-fleet.md         # 5인조 멀티에이전트 dispatch / assignee
     ├── workflow-cungya.md      # 역할별 페르소나 5인조 워크플로우
+    ├── agentradio-coral.md     # 실시간 peer 사이드채널 연동 (선택)
     └── images/
         ├── flow.png
         └── architecture.png

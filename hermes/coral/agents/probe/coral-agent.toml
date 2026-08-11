@@ -1,0 +1,20 @@
+edition = 3
+
+# Coral 로컬 레지스트리용 no-op 프로브 에이전트.
+# 세션의 각 에이전트(pm/dev/infra/qa/ops)를 이 한 정의로 인스턴스화하고,
+# spawn 시 자기 $CORAL_CONNECTION_URL 을 캡처만 한다(실제 대화는 Hermes가 함).
+[agent]
+name = "probe"
+version = "0.1.0"
+description = "no-op probe: captures its Coral MCP URL, then idles (driven externally by Hermes)"
+readme = "probe agent for Hermes<->Coral wiring"
+summary = "captures its Coral MCP URL and idles"
+
+[agent.license]
+type = "spdx"
+expression = "MIT"
+
+[runtimes.executable]
+path = "bash"
+arguments = ["startup_probe.sh"]
+transport = "streamable_http"

@@ -114,6 +114,27 @@ grep -n "dispatch_in_gateway" "$HERMES_HOME/config.yaml" || true
 
 ---
 
+## 3-2단계: AgentRadio/Coral 실시간 peer 연동 (선택)
+
+5인조에 **실시간 peer 메시징 사이드채널**을 붙인다(Kanban 은 그대로 SoT, Coral 은 보완). 상세: [`docs/agentradio-coral.md`](docs/agentradio-coral.md).
+
+```bash
+bash "$BOOTSTRAP_REPO/hermes/coral/install-coral.sh"        # coral-server.jar 확보 (Java 24+ 필요)
+cp -r "$BOOTSTRAP_REPO/hermes/coral" "$HERMES_HOME/coral"    # 스크립트 이관
+bash "$HERMES_HOME/coral/setup-hermes-coral.sh" --inject pm,dev,infra,qa,ops --restart-gateway
+```
+
+- `mcp` 파이썬 패키지 필요(`pip install mcp`) — 없으면 Hermes MCP 조용히 비활성.
+- **세션 secret 은 서버 재시작마다 바뀜** → 재부팅 자동복구는 `hermes/coral/autostart/` 등록(Windows Startup 폴더 / mac·linux cron).
+- SOUL `[COORD]` 규칙은 3-1단계에서 SOUL 템플릿을 복사하면 함께 적용됨.
+
+**검증:**
+```bash
+for p in pm dev infra qa ops; do hermes mcp test coral --profile $p; done   # 각 ✓ Connected / Tools: 8
+```
+
+---
+
 ## 4단계: 스킬 배치
 
 ```bash
