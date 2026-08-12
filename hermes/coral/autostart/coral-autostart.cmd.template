@@ -9,3 +9,5 @@ set HH=__HERMES_HOME__
 %BASH% -lc "HERMES_HOME='%HH%' hermes gateway restart"
 REM Coral -> Discord 실시간 미러 브리지 (10초 폴링). READ_SCRIPT 는 AgentRadio passive_scripts 경로로 지정.
 %BASH% -lc "HERMES_HOME='%HH%' CORAL_HOME='%HH%/coral' CORAL_PY=python PYTHONUTF8=1 nohup python -u '%HH%/coral/coral-discord-bridge.py' --loop 10 > '%HH%/coral/coral-bridge.log' 2>&1 &"
+REM Coral 자동응답 데몬 (12초 폴링): idle 에이전트가 coral 멘션에 자율 응답. AUTORESP_ENABLED=0 이면 드라이런.
+%BASH% -lc "HERMES_HOME='%HH%' CORAL_HOME='%HH%/coral' CORAL_PY=python PYTHONUTF8=1 nohup python -u '%HH%/coral/coral-autoresponder.py' --loop 12 > '%HH%/coral/coral-autoresp.log' 2>&1 &"

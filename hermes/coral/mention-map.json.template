@@ -1,0 +1,7 @@
+{
+  "pm":    "__PM_DISCORD_BOT_ID__",
+  "dev":   "__DEV_DISCORD_BOT_ID__",
+  "infra": "__INFRA_DISCORD_BOT_ID__",
+  "qa":    "__QA_DISCORD_BOT_ID__",
+  "ops":   "__OPS_DISCORD_BOT_ID__"
+}

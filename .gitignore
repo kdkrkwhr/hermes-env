@@ -97,3 +97,15 @@ output/
 # ============================================
 NOTES.local.md
 TODO.local.md
+
+# coral 런타임/시크릿 산출물 (템플릿만 커밋, 실물 제외)
+hermes/coral/mention-map.json
+hermes/coral/coral-server.jar
+hermes/coral/coral-urls.txt
+hermes/coral/coral-bridge-seen.txt
+hermes/coral/coral-server.log
+hermes/coral/coral-bridge.log
+hermes/coral/coral-autoresp-seen.txt
+hermes/coral/coral-autoresp.log
+hermes/coral/session-resp.json
+hermes/coral/fleet.json

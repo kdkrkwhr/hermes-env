@@ -37,6 +37,32 @@ CORAL_PY    = os.environ.get("CORAL_PY", "python3")
 # Windows에선 bare 'bash'가 WSL bash를 잡아 Windows 경로 스크립트에서 멈춤 → git-bash 명시.
 BASH        = os.environ.get("BRIDGE_BASH",
     "C:/Program Files/Git/usr/bin/bash.exe" if os.name == "nt" else "bash")
+# 프로필명 → Discord 봇 ID 매핑(설치마다 다름 → 파일/JSON env). 없으면 평문 @name 유지.
+# mention-map.json 예: {"pm":"<botid>","dev":"<botid>","infra":"...","qa":"...","ops":"..."}
+MAP_FILE    = os.environ.get("BRIDGE_MENTION_MAP", os.path.join(_CORAL_HOME, "mention-map.json"))
+
+def load_mention_map():
+    raw = os.environ.get("BRIDGE_MENTION_MAP_JSON")
+    if raw:
+        try: return json.loads(raw)
+        except Exception: pass
+    if MAP_FILE and os.path.exists(MAP_FILE):
+        try: return json.load(open(MAP_FILE, encoding="utf-8"))
+        except Exception: pass
+    return {}
+
+MENTION_MAP = load_mention_map()
+
+def mref(name):
+    """프로필명 → Discord 멘션(<@id>). 매핑 없으면 @name 평문."""
+    bid = MENTION_MAP.get(name)
+    return f"<@{bid}>" if bid else f"@{name}"
+
+def sub_text_mentions(text):
+    """본문 속 @dev/@qa 등을 Discord 멘션으로 치환(매핑된 이름만)."""
+    for name, bid in MENTION_MAP.items():
+        text = re.sub(rf"@{re.escape(name)}\b", f"<@{bid}>", text)
+    return text
 
 def load_urls():
     urls = {}
@@ -92,8 +118,9 @@ def send_discord(text):
 def fmt(tname, msg):
     sender = msg.get("sendingAgentName", "?")
     ment = msg.get("mentionAgentNames") or []
-    at = (" → @" + ",".join(ment)) if ment else ""
-    return f"🔗 [coral#{tname}] {sender}{at}: {msg.get('messageText','')}"
+    at = (" → " + " ".join(mref(m) for m in ment)) if ment else ""
+    text = sub_text_mentions(msg.get("messageText", ""))
+    return f"🔗 [coral#{tname}] {sender}{at}: {text}"
 
 def poll_once(backfill=False):
     urls = load_urls()
