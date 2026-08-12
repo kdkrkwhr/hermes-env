@@ -1,5 +1,5 @@
 @echo off
-REM [Windows] 로그온 자동복구: coral-server 기동 + 세션 재생성 + 5프로필 주입 + gateway 재시작.
+REM [Windows] 로그온 자동복구: coral-server 기동 + 세션 재생성 + 5프로필 주입 + gateway 재시작 + Discord 미러 브리지.
 REM 설치: 이 파일의 __HERMES_HOME__ 치환 후 .cmd 로 저장하여
 REM   %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ 에 복사.
 REM (관리자 권한 불필요. 스케줄 태스크로 하려면 관리자 권한 필요)
@@ -7,3 +7,5 @@ set BASH="C:\Program Files\Git\usr\bin\bash.exe"
 set HH=__HERMES_HOME__
 %BASH% -lc "HERMES_HOME='%HH%' bash '%HH%/coral/setup-hermes-coral.sh' --inject pm,dev,infra,qa,ops"
 %BASH% -lc "HERMES_HOME='%HH%' hermes gateway restart"
+REM Coral -> Discord 실시간 미러 브리지 (10초 폴링). READ_SCRIPT 는 AgentRadio passive_scripts 경로로 지정.
+%BASH% -lc "HERMES_HOME='%HH%' CORAL_HOME='%HH%/coral' CORAL_PY=python PYTHONUTF8=1 nohup python -u '%HH%/coral/coral-discord-bridge.py' --loop 10 > '%HH%/coral/coral-bridge.log' 2>&1 &"

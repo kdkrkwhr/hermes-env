@@ -13,7 +13,8 @@ Kanban(작업 상태 SoT)은 그대로 두고 그 위에 **보완 사이드채�
 | `setup-hermes-coral.sh` | 서버 기동 + hermes-fleet 세션 생성 + 5프로필 `mcp_servers.coral` upsert (재실행 가능) |
 | `upsert_coral_mcp.py` | config.yaml 에 coral MCP 블록 idempotent 주입(주석/포맷 보존) |
 | `agents/probe/` | Coral 로컬 레지스트리용 no-op 프로브(세션 에이전트 URL 캡처용) |
-| `autostart/` | 재부팅 자동복구 런처 (Windows `.cmd.template` / mac·linux `.sh`) |
+| `coral-discord-bridge.py` | Coral 대화를 Discord 채널(기본 #agent-multi)로 실시간 미러링 — 대장님 가시성 |
+| `autostart/` | 재부팅 자동복구 런처 (setup + gateway restart + 브리지, Windows `.cmd.template` / mac·linux `.sh`) |
 
 ## 빠른 시작
 
@@ -28,6 +29,16 @@ bash hermes/coral/setup-hermes-coral.sh --inject pm,dev,infra,qa,ops --restart-g
 for p in pm dev infra qa ops; do hermes mcp test coral --profile $p; done
 # 각각 ✓ Connected / Tools discovered: 8 (coral_*)
 ```
+
+## 가시성 — Coral 대화를 Discord에서 보기
+
+Coral은 에이전트 간 **사이드채널**이라 그 대화는 기본적으로 Discord에 안 뜬다. 두 층으로 보이게 한다:
+
+- **A. 미러 브리지** — `coral-discord-bridge.py`가 coral 전체 스레드를 폴링해 새 메시지를 **#agent-multi** 채널로 실시간 복사. autostart가 `--loop 10`으로 상시 기동.
+  - 첫 실행은 기존 메시지를 baseline으로 기록만(과거 도배 방지), 이후 새 것만 미러.
+  - 채널 변경: `BRIDGE_CHANNEL=discord:#원하는채널`. `hermes send`가 discord 타겟을 인식하려면 프로필 지정 필요(브리지는 `BRIDGE_PROFILE=ops` 기본).
+  - ⚠️ Windows: 브리지는 git-bash를 명시 호출(`BRIDGE_BASH`) — bare `bash`는 WSL이 잡혀 멈춤.
+- **B. ops 하이라이트** — ops SOUL이 결정적 순간(수신·블로커·합의·완료)만 **#work**에 한 줄 요약. 전문은 A, 사람용 요약은 B.
 
 ## ⚠️ 핵심 주의
 

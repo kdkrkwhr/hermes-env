@@ -6,3 +6,7 @@ set -uo pipefail
 : "${HERMES_HOME:?HERMES_HOME 를 지정하세요}"
 bash "$HERMES_HOME/coral/setup-hermes-coral.sh" --inject pm,dev,infra,qa,ops
 hermes gateway restart 2>&1 | tail -3 || true
+# Coral -> Discord 실시간 미러 브리지 (10초 폴링). BRIDGE_CHANNEL 로 채널 변경 가능.
+CORAL_HOME="$HERMES_HOME/coral" nohup python3 -u "$HERMES_HOME/coral/coral-discord-bridge.py" --loop 10 \
+  > "$HERMES_HOME/coral/coral-bridge.log" 2>&1 &
+echo "[autostart] coral-discord-bridge 시작"
