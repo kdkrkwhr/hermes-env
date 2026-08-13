@@ -111,8 +111,12 @@ def collect_messages(urls):
                 msgs[key] = (tname, msg)
     return msgs
 
-def send_discord(text):
-    subprocess.run(["hermes", "--profile", PROFILE, "send", "--to", CHANNEL],
+AGENTS = ["pm", "dev", "infra", "qa", "ops"]  # 자기 목소리로 말할 수 있는 hermes 프로필
+
+def send_discord(text, sender=None):
+    # 발화자 프로필 봇으로 전송(멀티보이스). hermes 프로필이 아니면(예: claude-code) BRIDGE_PROFILE 폴백.
+    prof = sender if sender in AGENTS else PROFILE
+    subprocess.run(["hermes", "--profile", prof, "send", "--to", CHANNEL],
                    input=text.encode("utf-8"), capture_output=True)
 
 def fmt(tname, msg):
@@ -120,7 +124,7 @@ def fmt(tname, msg):
     ment = msg.get("mentionAgentNames") or []
     at = (" → " + " ".join(mref(m) for m in ment)) if ment else ""
     text = sub_text_mentions(msg.get("messageText", ""))
-    return f"🔗 [coral#{tname}] {sender}{at}: {text}"
+    return f"🔗 [coral#{tname}]{at}: {text}"  # 발화자는 이제 Discord 봇 정체성이 표현
 
 def poll_once(backfill=False):
     urls = load_urls()
@@ -135,7 +139,7 @@ def poll_once(backfill=False):
     sent = 0
     for k, (tname, msg) in sorted(new, key=lambda kv: kv[1][1].get("messageTimestamp", "")):
         if not silent:
-            send_discord(fmt(tname, msg)); sent += 1
+            send_discord(fmt(tname, msg), msg.get("sendingAgentName")); sent += 1
         seen.add(k)
     save_seen(seen)
     tag = "baseline(기록만)" if silent else f"미러 {sent}건"
