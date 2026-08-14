@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hermes-team-hub — 5인조 멀티에이전트 플릿</title>
+  <meta name="description" content="Hermes Agent 5인조 멀티에이전트 플릿(PM/Dev/Infra/QA/Ops) 팀 허브 — 역할별 메뉴 + hermes-env 부트스트랩 연계" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⬡</span>
+      <div>
+        <h1>hermes-team-hub</h1>
+        <p class="tagline">5인조 멀티에이전트 플릿 — 역할별 메뉴 + hermes-env 연계</p>
+      </div>
+    </div>
+    <nav class="topnav" id="topnav">
+      <button class="navbtn active" data-view="home">홈</button>
+      <button class="navbtn" data-view="pm">PM</button>
+      <button class="navbtn" data-view="dev">Dev</button>
+      <button class="navbtn" data-view="infra">Infra</button>
+      <button class="navbtn" data-view="qa">QA</button>
+      <button class="navbtn" data-view="ops">Ops</button>
+      <button class="navbtn" data-view="setup">셋업</button>
+    </nav>
+  </header>
+
+  <main id="app">
+    <!-- views injected by app.js -->
+  </main>
+
+  <footer class="foot">
+    <span>Hermes Agent · Nous Research</span>
+    <span class="dot">·</span>
+    <a href="https://github.com/kdkrkwhr/hermes-env" target="_blank" rel="noopener">hermes-env repo</a>
+    <span class="dot">·</span>
+    <span>Kanban SoT: <code>127.0.0.1:9119</code></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

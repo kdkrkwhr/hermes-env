@@ -90,3 +90,4 @@ Hermes 에이전트에게:
 2. [`docs/conventions.md`](docs/conventions.md) — 디렉토리 분리·산출물 규칙
 3. [`docs/kanban-fleet.md`](docs/kanban-fleet.md) — 양송 Kanban dispatch / assignee
 4. [`docs/workflow-cungya.md`](docs/workflow-cungya.md) — 역할별 페르소나 5인조 워크플로우 (대장님 멀티에이전트)
+5. [`team-hub/`](team-hub/) — 5인조 플릿 팀 허브 (정적 사이트, 역할별 메뉴 + 부트스트랩 연계)
