@@ -40,7 +40,39 @@ uname -s   # Linux / Darwin / MINGW64_NT (git-bash)
 - [ ] python3 존재
 - [ ] OS 파악 완료 (이후 단계에서 분기)
 
-**Windows 주의:** 모든 셸 명령은 **git-bash** 기준. PowerShell이 아니다.
+**Windows 주의:** 기본 셸 명령은 **git-bash** 기준. PowerShell이 아니다.
+예외는 **1-1단계 Hermes CLI 설치**뿐 — 공식 Windows 설치기는 PowerShell이다.
+
+---
+
+## 1-1단계: Hermes CLI 설치 (없으면)
+
+`hermes` 가 PATH에 없으면 공식 설치 스크립트를 돌린다. 이미 있으면 건너뛴다.
+
+- 모델/프로바이더 마법사는 **대화형**이므로 생략한다. 사용자는 나중에 `hermes setup` 또는 `.env`로 설정.
+- Windows 공식 기본 데이터 경로는 `%LOCALAPPDATA%\hermes`다. 이 repo는 0단계 `$HERMES_HOME`(기본 `$HOME/.hermes`)을 쓰므로 **반드시 `-HermesHome` / `--hermes-home`을 넘긴다.**
+- 설치 후 현재 셸 PATH에 `hermes`가 안 잡히면 터미널을 다시 열고 재검증한다.
+
+```bash
+export HERMES_HOME   # 0단계에서 받은 값
+bash "$BOOTSTRAP_REPO/hermes/install-hermes.sh"
+```
+
+Windows에서 에이전트가 PowerShell을 쓰는 경우:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File "$BOOTSTRAP_REPO\hermes\install-hermes.ps1" `
+  -HermesHome $env:HERMES_HOME
+```
+
+**검증:**
+```bash
+command -v hermes && hermes --version && echo OK || echo FAIL
+```
+
+- [ ] `hermes` 명령 존재 (또는 이번 단계에서 설치 완료)
+- [ ] `hermes --version` 출력됨
 
 ---
 
@@ -194,6 +226,7 @@ SSoT 레포가 아직 없으면 이 단계는 건너뛰고, 디렉토리 규칙�
 | 항목 | 상태 |
 |------|------|
 | 경로 변수 3개 설정됨 | ✅/❌ |
+| Hermes CLI 설치 (`hermes --version`) | ✅/이미 있음/❌ |
 | 디렉토리 구조 생성 | ✅/❌ |
 | config.yaml 배치 + 플레이스홀더 치환 | ✅/❌ |
 | 스킬 배치 | ✅/❌ |

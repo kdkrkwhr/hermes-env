@@ -19,6 +19,7 @@ Hermes 에이전트에게:
 > `AGENT_BOOTSTRAP.md`를 읽고 순서대로 세팅해줘.
 
 에이전트가 0단계에서 경로 3개를 묻는다. 답하면 그 값 기준으로 나머지를 깐다.
+`hermes` CLI가 없으면 1-1단계에서 공식 설치 스크립트로 설치한다 (모델/API 키 마법사는 생략).
 
 | # | 질문 | 변수 |
 |---|------|------|
@@ -39,6 +40,8 @@ Hermes 에이전트에게:
 ├── README.md
 ├── .env.example                # 시크릿 이름만 (값 없음)
 ├── hermes/
+│   ├── install-hermes.sh       # Hermes CLI 설치 (없으면, Unix/mac/WSL; Win은 ps1 위임)
+│   ├── install-hermes.ps1      # Hermes CLI 설치 (없으면, Windows native)
 │   ├── config.yaml.template    # default 워커 (워크플로우 전용, 모델/프로바이더 제외)
 │   ├── profiles/
 │   │   ├── pm/                 # PM(프로젝트 매니저) — SOUL + kanban 템플릿
@@ -63,10 +66,10 @@ Hermes 에이전트에게:
 | 포함 | 미포함 |
 |------|--------|
 | 부트스트랩 체크리스트 | 프로젝트 코드 |
-| config 워크플로우 템플릿(kanban/discord/SOUL 등) | 모델명·프로바이더·API키 |
-| 이식용 스킬 세트 | 에이전트 메모리 |
-| 컨벤션 문서 | `.env` 실제 값 |
-| 플로우 / 배치 다이어그램 | 특정 PC 하드코딩 경로 |
+| Hermes CLI 설치 래퍼 (없으면 공식 설치기 호출) | 모델명·프로바이더·API키 |
+| config 워크플로우 템플릿(kanban/discord/SOUL 등) | 에이전트 메모리 |
+| 이식용 스킬 세트 | `.env` 실제 값 |
+| 컨벤션 문서 / 다이어그램 | 특정 PC 하드코딩 경로 |
 
 ## 포함 스킬 (요약)
 
