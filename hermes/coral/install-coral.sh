@@ -30,4 +30,22 @@ else
   echo "        'https://api.adoptium.net/v3/binary/latest/25/ga/<os>/<arch>/jdk/hotspot/normal/eclipse?project=jdk'"
   echo "   압축 해제 후: export CORAL_JAVA=\"\$CORAL_HOME/<jdk>/bin/java\""
 fi
+# Windows: probe 에이전트의 실행 경로 "bash" 는 예약작업/서비스 컨텍스트에서
+# WSL 로 풀려 execvpe(/bin/bash) 로 죽는다(2026-08-20 근본원인). git-bash 절대경로로 고정.
+# mac/linux 는 "bash" 가 정상이므로 건드리지 않는다.
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*|CYGWIN*)
+    TOML="$CORAL_HOME/agents/probe/coral-agent.toml"
+    if [ -f "$TOML" ] && grep -qE '^path = "bash"' "$TOML"; then
+      GB=$(cygpath -m "$(command -v bash)" 2>/dev/null)   # -m = forward-slash Windows path
+      if [ -n "$GB" ]; then
+        sed -i "s#^path = \"bash\"#path = \"$GB\"#" "$TOML"
+        echo "probe toml path -> $GB (Windows: WSL bash 회피)"
+      else
+        echo "⚠️ git-bash 절대경로 산출 실패 — probe toml path 를 수동으로 git-bash 경로로 바꾸세요"
+      fi
+    fi
+    ;;
+esac
+
 echo "[done] jar=$JAR"
