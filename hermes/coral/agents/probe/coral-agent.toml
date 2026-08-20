@@ -15,6 +15,10 @@ type = "spdx"
 expression = "MIT"
 
 [runtimes.executable]
+# mac/linux: "bash" 로 충분. ⚠️ Windows에서 coral-server를 예약작업/서비스로 띄우면
+# "bash"가 WSL로 풀려 execvpe(/bin/bash) 실패 → probe 사망 → 세션 close.
+# Windows 상시화 시 git-bash 절대경로로 교체할 것 (예: "C:/Program Files/Git/bin/bash.exe").
+# 배경: docs/agentradio-coral.md 운영주의 §5.
 path = "bash"
 arguments = ["startup_probe.sh"]
 transport = "streamable_http"
