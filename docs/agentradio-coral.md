@@ -63,8 +63,20 @@ for p in pm dev infra qa ops; do hermes mcp test coral --profile $p; done
 9. **상시 유지 패턴(Windows)** — coral-server 를 예약작업(로그온, `Start-Process`, 재시작 PT1M) 으로 서비스화 + hermes cron `--no-agent` 헬스 잡(1h)으로 서버/세션 감시. cron 은 게이트웨이 재시작 명령을 **금지**(lifecycle guard)하므로, URL 변경 후 게이트웨이 재시작은 별도 로그온 태스크(`autostart`)가 담당.
 10. **한글(비-ASCII) 깨짐 — JVM 인코딩** — 한국어 Windows 는 JVM 기본 인코딩이 MS949 라, coral-server 가 메시지의 한글을 **U+FFFD(대체문자)로 저장·반환**한다(전송 바이트는 정상 UTF-8인데 서버가 깨뜨림; `Content-Type; charset=utf-8` 로는 안 고쳐짐). 서버 기동 java 인자에 `-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8` 를 넣어야 한다. → `setup-hermes-coral.sh` 의 `start_server()` 에 반영됨(2026-08-20). 검증: 한글 메시지 송신 후 서버 echo 가 원문과 완전 일치.
 
+11. **헬스 워치독(cron) — `.sh` 아닌 `.py` 로** — 서버/세션 상시 감시는 `hermes/coral/coral_health.py.template` 을 쓴다. **반드시 Python** 이어야 한다: 스케줄러는 `.sh` 를 PATH `bash`(게이트웨이 Task Scheduler 컨텍스트에선 WSL)로 돌려 `execvpe(/bin/bash)` 로 죽지만, `.py` 는 스케줄러 내장 Python 으로 실행되어 안전하다. 정상 시 무출력(=무전송), 서버/세션이 죽었을 때만 `setup-hermes-coral.sh`(git-bash 절대경로 호출) 로 재생성·재주입. 설치:
+    ```bash
+    # 1) placeholder 치환 후 프로필 scripts 디렉토리로 복사 (scripts/ 는 .gitignore 대상 = 런타임 위치)
+    cp hermes/coral/coral_health.py.template <HH>/profiles/ops/scripts/coral_health.py   # + __PLACEHOLDER__ 치환
+    # 2) ticker 가 살아있는 프로필(ops)에 등록 (script 는 HERMES_HOME/scripts/ 아래에서 해석됨)
+    HERMES_HOME=<HH>/profiles/ops hermes cron create "0 * * * *" \
+      --no-agent --name coral-health --script coral_health.py --workdir <HH>/coral
+    HERMES_HOME=<HH>/profiles/ops hermes cron status   # "Gateway is running" 확인
+    ```
+
 ## 요구사항 체크
 
 - [ ] `hermes mcp test coral --profile <p>` 5개 전부 Connected
 - [ ] coral-server 상시화(autostart) 등록
+- [ ] `coral_health.py` cron 등록(ops) + `cron status` 그린
+- [ ] 한글 왕복 검증 (송신 → 서버 echo 원문 일치)
 - [ ] SOUL `[COORD]` 규칙 적용 여부 사용자 확인

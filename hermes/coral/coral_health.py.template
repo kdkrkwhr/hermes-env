@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""Coral fleet health watchdog — register as a hermes cron `--no-agent` job (hourly).
+Quiet on success; only acts when the coral server or session is down.
+
+Why Python (not .sh): the hermes scheduler runs non-.sh scripts via its bundled
+Python. Under a gateway launched by Windows Task Scheduler, PATH `bash` resolves
+to WSL bash and `.sh` cron jobs die with `execvpe(/bin/bash)`. Python sidesteps
+that entirely. When this script DOES need bash (to run setup-hermes-coral.sh),
+it calls git-bash by absolute path — never PATH `bash`.
+
+Bootstrap substitution (see AGENT_BOOTSTRAP.md):
+  __HERMES_HOME__  -> Hermes home (parent of profiles/ and coral/)
+  __CORAL_HOME__   -> coral dir (default: __HERMES_HOME__/coral)
+  __GIT_BASH__     -> git-bash exe (Windows, e.g. C:/Program Files/Git/bin/bash.exe;
+                      on mac/linux use "bash")
+  __TEMP__         -> temp dir where setup writes coral-urls.txt (Windows: bash's
+                      /tmp == C:/Users/<you>/AppData/Local/Temp)
+  __HERMES_BIN__   -> hermes CLI (default: "hermes")
+
+Register (under a profile whose gateway ticker is live, e.g. ops):
+  HERMES_HOME=__HERMES_HOME__/profiles/ops hermes cron create "0 * * * *" \
+    --no-agent --name coral-health --script coral_health.py --workdir __CORAL_HOME__
+
+Never put a `hermes gateway restart|stop` literal here — cron's lifecycle guard
+rejects it. Gateway refresh after a URL change is the logon recovery task's job.
+"""
+import os, sys, time, subprocess, urllib.request, re
+from collections import Counter
+
+HERMES_HOME = "__HERMES_HOME__"
+CORAL_HOME  = "__CORAL_HOME__"
+GIT_BASH    = "__GIT_BASH__"
+TEMP        = "__TEMP__"
+HERMES_BIN  = "__HERMES_BIN__"
+
+PROF     = HERMES_HOME + "/profiles"
+OPS_HOME = PROF + "/ops"
+SETUP    = CORAL_HOME + "/setup-hermes-coral.sh"
+UPSERT   = CORAL_HOME + "/upsert_coral_mcp.py"
+URLS     = TEMP + "/coral-urls.txt"
+FLAG     = TEMP + "/coral-url-changed.flag"
+NS       = "http://localhost:5555/api/v1/local/namespace"
+AUTH     = {"Authorization": "Bearer test"}
+
+
+def server_up():
+    try:
+        urllib.request.urlopen(urllib.request.Request(NS, headers=AUTH), timeout=5); return True
+    except urllib.error.HTTPError:
+        return True   # any HTTP status (even 401) = alive
+    except Exception:
+        return False
+
+
+def run_setup():
+    """Boot server (if down) + create session — via git-bash, never PATH bash."""
+    subprocess.run([GIT_BASH, SETUP], capture_output=True, timeout=180)
+
+
+def reinject():
+    """Re-inject the distinct-UUID probe URLs (exclude the shared/assembled sessionId)."""
+    for _ in range(20):
+        lines = open(URLS, encoding="utf-8").read().splitlines() if os.path.exists(URLS) else []
+        if len({u for u in re.findall(r"v1/([0-9a-f-]{36})", "\n".join(lines))}) >= 2:
+            break
+        time.sleep(2)
+    lines = open(URLS, encoding="utf-8").read().splitlines() if os.path.exists(URLS) else []
+    uuids = re.findall(r"v1/([0-9a-f-]{36})", "\n".join(lines))
+    sid = Counter(uuids).most_common(1)[0][0] if uuids else None
+    changed = False
+    for name in ("pm", "dev", "infra", "qa", "ops"):
+        url = next((ln.split("|", 1)[1] for ln in lines
+                    if ln.startswith(name + "|") and sid and sid not in ln), None)
+        if not url:
+            print(f"[coral-health] {name}: probe URL not found"); continue
+        subprocess.run([sys.executable, UPSERT, f"{PROF}/{name}/config.yaml"],
+                       capture_output=True,
+                       env=dict(os.environ, CORAL_URL=url, CORAL_PROFILE=name))
+        changed = True
+    if changed:
+        open(FLAG, "w", encoding="utf-8").write("CORAL_URL_CHANGED\n")
+        print("[coral-health] CORAL_URL_CHANGED - 5 profiles re-injected; refresh gateways (logon recovery task).")
+
+
+def main():
+    if not server_up():
+        print("[coral-health] server DOWN -> running setup")
+        run_setup()
+        for _ in range(20):
+            time.sleep(3)
+            if server_up(): break
+    if not server_up():
+        print("[coral-health] server STILL DOWN - manual attention needed"); return
+
+    env = dict(os.environ, HERMES_HOME=OPS_HOME)
+    r = subprocess.run([HERMES_BIN, "--profile", "ops", "mcp", "test", "coral"],
+                       capture_output=True, text=True, env=env, timeout=90)
+    if "Connected" in (r.stdout + r.stderr):
+        return   # healthy -> silent
+
+    print("[coral-health] session dead -> recreating + re-injecting")
+    run_setup()
+    reinject()
+
+
+if __name__ == "__main__":
+    main()
