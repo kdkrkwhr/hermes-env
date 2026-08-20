@@ -61,6 +61,7 @@ for p in pm dev infra qa ops; do hermes mcp test coral --profile $p; done
 7. **probe URL 함정** — probe 가 쓴 **distinct-UUID URL 만 유효**. `sessionId` 로 조립한 URL 은 401. 또한 probe URL 은 setup 의 동기 라인 **이후 async 로 기록**되므로, 재주입 전 `/tmp/coral-urls.txt` 에 distinct UUID(>1)가 들어올 때까지 **대기**할 것.
 8. **`GET /api/v1/local/session/<SID>` 는 활성 세션에도 404** — 세션 생존 판정에 쓰지 말 것. keepalive ping 은 응답코드를 무시하고 보내기만 한다.
 9. **상시 유지 패턴(Windows)** — coral-server 를 예약작업(로그온, `Start-Process`, 재시작 PT1M) 으로 서비스화 + hermes cron `--no-agent` 헬스 잡(1h)으로 서버/세션 감시. cron 은 게이트웨이 재시작 명령을 **금지**(lifecycle guard)하므로, URL 변경 후 게이트웨이 재시작은 별도 로그온 태스크(`autostart`)가 담당.
+10. **한글(비-ASCII) 깨짐 — JVM 인코딩** — 한국어 Windows 는 JVM 기본 인코딩이 MS949 라, coral-server 가 메시지의 한글을 **U+FFFD(대체문자)로 저장·반환**한다(전송 바이트는 정상 UTF-8인데 서버가 깨뜨림; `Content-Type; charset=utf-8` 로는 안 고쳐짐). 서버 기동 java 인자에 `-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8` 를 넣어야 한다. → `setup-hermes-coral.sh` 의 `start_server()` 에 반영됨(2026-08-20). 검증: 한글 메시지 송신 후 서버 echo 가 원문과 완전 일치.
 
 ## 요구사항 체크
 

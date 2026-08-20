@@ -54,7 +54,11 @@ server_up() { curl -s -m3 "$BASE/api/v1/local/namespace" -H "$AUTHH" >/dev/null 
 start_server() {  # probe 레지스트리로 기동 + ready 대기
   [ -f "$CORAL_JAR" ] || { echo "FAIL: $CORAL_JAR 없음 → 먼저 install-coral.sh 실행"; return 1; }
   echo "    coral-server 기동(probe 레지스트리)..."
-  ( cd "$PROBE_DIR" && nohup "$CORAL_JAVA" -jar "$CORAL_JAR" \
+  # -D...encoding=UTF-8: 한국어 등 비-ASCII Windows에서 JVM 기본 인코딩(MS949 등)이
+  # coral 메시지 한글을 U+FFFD 로 깨뜨리는 것을 방지 (2026-08-20 근본원인).
+  ( cd "$PROBE_DIR" && nohup "$CORAL_JAVA" \
+      -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 \
+      -jar "$CORAL_JAR" \
       --auth.keys="$CORAL_AUTH" --network.bind_port="$CORAL_PORT" --network.allow_any_host=true \
       --session.defaultWaitTimeout=300000 --registry.include_debug_agents=true \
       --registry.local_agents="$PROBE_DIR" > "$CORAL_HOME/coral-server.log" 2>&1 & )
