@@ -18,6 +18,7 @@
 5. **에이전트 완료 = complete + 결과 보고** (block/리뷰요청 금지)
 6. **custom_providers는 list-of-dicts** — dict 형식으로 쓰면 config 날아감
 7. **모델/프로바이더 정보는 이 repo에 넣지 않음** — 환경 의존/시크릿. `hermes setup` 또는 `.env`로 세팅
+8. **경로 표기 (Windows/git-bash)** — 셸은 git-bash라 드라이브가 `/d/` 로 마운트됨. 파일 경로는 항상 **POSIX 절대경로 `/d/...`** (맨 앞 슬래시 필수, 드라이브 소문자). `d/...`(슬래시 없는 상대경로 → cwd 기준으로 엉뚱한 폴더 검색)·`D:` 백슬래시 표기 **금지**. 변환은 `cygpath -u 'D:\dir'`(→ POSIX) / `cygpath -w /d/dir`(→ Windows) 사용. *bootstrap.sh 가 Windows에서 이 규칙을 config `environment_hint` 에 자동 주입한다.*
 
 ## Kanban 플릿 (5인조 멀티에이전트)
 

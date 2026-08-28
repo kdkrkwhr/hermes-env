@@ -76,6 +76,17 @@ subst() {
       "$f" > "$t" && mv "$t" "$f"
 }
 
+# Windows(git-bash) 한정: 경로 표기 사고(/d/ 를 d/ 로 써서 엉뚱한 폴더 검색) 방지 힌트를
+# config 의 environment_hint 에 주입한다. mac/Linux 에선 아무것도 안 함.
+is_windows() { case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) return 0;; *) return 1;; esac; }
+ENV_HINT="Windows/git-bash 환경. 파일 경로는 항상 POSIX 절대경로 /d/... (맨 앞 슬래시 필수, 드라이브 소문자). 슬래시 없는 d/... 상대경로 및 드라이브 백슬래시 표기 금지. 경로 변환은 cygpath -u / cygpath -w 사용."
+set_env_hint() { # $1 config 파일 — environment_hint 가 비어있을 때만 채움
+  is_windows || return 0
+  grep -q "environment_hint: ''" "$1" 2>/dev/null || return 0
+  local t; t="$(mktemp)"
+  sed "s|environment_hint: ''|environment_hint: '$ENV_HINT'|" "$1" > "$t" && mv "$t" "$1"
+}
+
 # ---- 7단계 / --check: 현재 상태 검증 표 (환각 방지: 실제 파일시스템만 본다) ----
 doctor() {
   local fail=0
@@ -135,6 +146,7 @@ if [ -f "$HERMES_HOME/config.yaml" ]; then
 else
   cp "$SCRIPT_DIR/hermes/config.yaml.template" "$HERMES_HOME/config.yaml"
   subst "$HERMES_HOME/config.yaml"
+  set_env_hint "$HERMES_HOME/config.yaml"
   echo "  [OK] config.yaml 배치 + 경로 치환"
 fi
 for p in pm dev infra qa ops; do
@@ -144,6 +156,7 @@ for p in pm dev infra qa ops; do
   else
     cp "$SCRIPT_DIR/hermes/profiles/$p/config.yaml.template" "$HERMES_HOME/profiles/$p/config.yaml"
     subst "$HERMES_HOME/profiles/$p/config.yaml"
+    set_env_hint "$HERMES_HOME/profiles/$p/config.yaml"
     echo "  [OK] profiles/$p/config.yaml"
   fi
   if [ "$WITH_SOULS" = 1 ]; then
