@@ -23,42 +23,53 @@
 > - **Infra**: 기존(알고리즘/로직/아키) → **인프라 개발자** (인프라 설정/구축/배포)
 > - 코딩 구현은 Dev가, 인프라 세팅은 Infra가, QA는 QA가, 기획은 PM이, 비서는 Ops이 담당.
 
-## 2. 흐름 (요구사항 1건 처리 기준)
+## 2. 흐름 — OPS 허브 동적 라우팅
+
+낡은 "무조건 PM 거치는 일렬"을 버리고, **Ops(비서·디스패처)가 대장님 유일 창구로서
+업무 성격에 따라 경로를 고른다.** 조율은 Coral 이벤트, 상태는 Kanban, 사람 통신은 Discord.
 
 ```
-대장님 지시 (Discord #work)
+대장님 (Discord #work) — 목표 제시 · 게이트 승인만
+   ↓  유일 창구
+[Ops/ops] 접수 → 업무 성격 판단 → 동적 라우팅 (칸반 카드 create/assign)
+   ├─① 큰/복잡 업무    → [PM/pm] 기획·분해 → [Dev]+[Infra] 병렬 → [QA]
+   ├─② 소규모 개발     → [Dev/dev] 직행       (PM 우회, Ops 판단)
+   ├─③ 소규모 인프라   → [Infra/infra] 직행   (PM 우회, Ops 판단)
+   ├─④ 검증성·소규모   → [QA/qa] 직행         (PM 우회, Ops 판단)
+   └─⑤ 통지·관리       → Ops 자체 처리
+        ↑ 조율은 🪸Coral 이벤트로 서로 반응
+[QA/qa] 지속 검증·게이트: PASS → Done / REJECT → 담당자 In Progress 복귀
    ↓
-[PM/pm] 요구사항 분석 → 칸반 카드 분해 + 담당 배정
-   ↓
-[Dev/dev] 개발 리드 — 실제 코딩 구현
-   ↓
-[Infra/infra] 인프라 개발자 — 인프라 설정/구축/배포
-   ↓
-[QA/qa] 검수
-   PASS  → 칸반 Done + Ops에게 이관
-   REJECT → 담당자에게 수정 요구 + In Progress 복귀
-   ↓
-[Ops/ops] 칸반 모니터링(유일 디스패처) → 대장님 보고
+[Ops/ops] 완료 취합 → 대장님께 보고 (게이트 승인 필요 건만 상신)
 ```
+
+- **Ops**: 대장님 유일 창구. 라우팅 판단 + 카드 create/assign + 통지·관리 직접 처리.
+  → 이를 위해 `ops` 프로필 toolsets에 **`kanban` 포함 필수** (dev/infra/qa에 직접 배정하려면).
+- **PM**: 큰/복잡 업무만 기획·분해. 소규모는 Ops이 PM을 우회한다.
+- **Dev·Infra**: 병렬 실행. Ops이 소규모 건은 PM 없이 직접 배정 가능.
+- **QA**: 지속 검증·게이트. 소규모·검증성은 Ops에서 직접 수령.
+- **대장님**: 목표 제시 + 게이트 승인(A)만. 실행 조율엔 개입하지 않는다.
 
 ## 3. Ops(ops) 보고 트리거
 
-1. **① 분해·배정 완료 시** → 카드 ID · 담당자 · 제목 브리핑
+1. **① 라우팅·배정 완료 시** → 카드 ID · 담당자(pm/dev/infra/qa) · 경로 · 제목 브리핑
 2. **② 작업 시작/종료 시** → 누가 무슨 카드 건드리는지 브리핑 (`hermes kanban watch`/`tail` 폴링)
-3. **③ 완료 시** → Done 전환 브리핑
+3. **③ 완료 시** → Done 전환 브리핑 (게이트 승인 필요 건은 대장님께 상신)
 
 ## 4. 프로필 설정 규칙 (kanban-fleet.md 와 중복되나 요약)
 
 | 프로필 | `dispatch_in_gateway` | `default_assignee` | 역할 |
 |--------|----------------------|--------------------|------|
-| `ops` (버섯) | **true** (유일) | `pm` | 유일 디스패처 |
-| `pm` (PM) | false | (미사용) | spawn / 분해 |
-| `dev` (Dev) | false | (미사용) | spawn only |
-| `infra` (Infra) | false | (미사용) | spawn only |
-| `qa` (QA) | false | (미사용) | spawn only |
+| `ops` | **true** (유일) | `pm` (fallback) | 유일 디스패처 · **동적 라우팅** · `kanban` 툴셋 필수 |
+| `pm` | false | (미사용) | 큰/복잡 업무 분해 |
+| `dev` | false | (미사용) | 실행 (Ops 직행 배정 가능) |
+| `infra` | false | (미사용) | 실행 (Ops 직행 배정 가능) |
+| `qa` | false | (미사용) | 검증·게이트 (Ops 직행 수령 가능) |
 
 - 게이트웨이 여러 개 켜면 디스패처 이중 스윕 → claim 꼬임. 디스패처는 `ops` 하나만.
-- `auto_decompose: true` 유지 → Ops이 채팅에서 카드를 자동 분해.
+- `default_assignee: pm` 은 **fallback** — Ops이 라우팅에서 담당자를 명시하므로 평소엔 미사용. 미지정 카드만 pm으로.
+- `auto_decompose: true` 유지 → Ops이 채팅에서 카드를 자동 분해·라우팅.
+- **Ops이 dev/infra/qa에 직접 배정하려면 `ops` toolsets에 `kanban` 이 있어야 한다** (없으면 게이트웨이 자동디스패치만 되고 수동 라우팅 불가).
 
 ## 5. 호칭 규칙
 

@@ -92,8 +92,8 @@ bash bootstrap.sh --check --project-root "$PROJECT_ROOT" --e2e-root "$E2E_ROOT" 
 대장님이 **PM/Dev/Infra/QA/Ops** 5인조로 일하는 흐름:
 
 - 페르소나는 대화 라벨. 칸반 `assignee` 는 프로필명(`pm`/`dev`/`infra`/`qa`/`ops`).
-- 흐름: 대장님 지시 → PM 분해·배정(Ops 이 kanban 대리) → Dev+Infra 구현 → QA 검수(PASS→Done) → Ops 이 대장님께 보고.
-- `ops` 만 디스패처(`dispatch_in_gateway: true`, `default_assignee: pm`), 나머지는 `false`.
+- **흐름 = Ops 허브 동적 라우팅**: 대장님(목표·게이트 승인) → **Ops**(유일 창구)가 업무 성격 판단해 라우팅 → 큰/복잡=PM 분해→Dev/Infra 병렬→QA / 소규모=Dev·Infra·QA **직행**(PM 우회) / 통지·관리=Ops 자체 → Ops 완료 보고. 조율은 Coral, 상태는 Kanban.
+- `ops` 만 디스패처(`dispatch_in_gateway: true`, `default_assignee: pm` fallback), 나머지는 `false`. **`ops` toolsets에 `kanban` 필수**(직행 배정용).
 - 호칭: **"대장님"** (대표님 금지).
 
 상세: [`docs/workflow-cungya.md`](docs/workflow-cungya.md), [`docs/kanban-fleet.md`](docs/kanban-fleet.md)

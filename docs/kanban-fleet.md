@@ -16,7 +16,8 @@
 
 - 게이트웨이 여러 개 켤 때 디스패처가 **이중 스윕**하면 claim/꼬임 난다.
 - `default_assignee: ""`면 분해기가 이상한 assignee를 찍고 카드가 `ready`에 영원히 남을 수 있다.
-- `ops`가 유일 디스패처 → 카드를 `pm`(PM)에게 우선 배정, PM이 세부 담당자(`dev`/`infra`/`qa`)로 재배정.
+- `ops`가 유일 디스패처 → **업무 성격에 따라 동적 라우팅**: 큰/복잡 → `pm` 분해, 소규모 개발 → `dev` 직행, 소규모 인프라 → `infra` 직행, 검증성 → `qa` 직행 (PM 우회). `default_assignee: pm` 은 미지정 카드용 fallback.
+- **`ops` toolsets에 `kanban` 필수** — Ops이 dev/infra/qa에 직접 카드를 create/assign 하려면 필요. 상세 흐름: `workflow-cungya.md` §2.
 
 ## 적용
 
