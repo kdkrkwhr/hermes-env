@@ -76,12 +76,17 @@ subst() {
       "$f" > "$t" && mv "$t" "$f"
 }
 
-# Windows(git-bash) 한정: 경로 표기 사고(/d/ 를 d/ 로 써서 엉뚱한 폴더 검색) 방지 힌트를
-# config 의 environment_hint 에 주입한다. mac/Linux 에선 아무것도 안 함.
-is_windows() { case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) return 0;; *) return 1;; esac; }
-ENV_HINT="Windows/git-bash 환경. 파일 경로는 항상 POSIX 절대경로 /d/... (맨 앞 슬래시 필수, 드라이브 소문자). 슬래시 없는 d/... 상대경로 및 드라이브 백슬래시 표기 금지. 경로 변환은 cygpath -u / cygpath -w 사용."
-set_env_hint() { # $1 config 파일 — environment_hint 가 비어있을 때만 채움
-  is_windows || return 0
+# 경로 표기 사고(맨몸 상대경로로 cwd 기준 엉뚱한 폴더 검색) 방지 힌트를
+# OS별로 config 의 environment_hint(hermes 네이티브 환경 주입 슬롯)에 넣는다.
+ENV_HINT=""
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*|CYGWIN*)
+    ENV_HINT="Windows/git-bash 환경. 파일 경로는 항상 POSIX 절대경로 /d/... (맨 앞 슬래시 필수, 드라이브 소문자). 슬래시 없는 d/... 상대경로 및 드라이브 백슬래시 표기 금지. 경로 변환은 cygpath -u / cygpath -w 사용." ;;
+  Darwin)
+    ENV_HINT="macOS 환경. 파일 경로는 항상 절대경로 /Users/... 또는 \$HOME/... 사용. 맨 앞 슬래시 없는 상대경로(예: Users/...)는 cwd 기준으로 엉뚱한 위치를 가리키므로 금지." ;;
+esac
+set_env_hint() { # $1 config 파일 — 주입할 힌트가 있고 environment_hint 가 비어있을 때만 채움
+  [ -n "$ENV_HINT" ] || return 0
   grep -q "environment_hint: ''" "$1" 2>/dev/null || return 0
   local t; t="$(mktemp)"
   sed "s|environment_hint: ''|environment_hint: '$ENV_HINT'|" "$1" > "$t" && mv "$t" "$1"
