@@ -1,6 +1,6 @@
 # hermes-env
 
-어떤 PC든 `git clone` 한 번. 에이전트에게 `AGENT_BOOTSTRAP.md` 읽고 세팅하라고 하면 끝.
+어떤 PC든 `git clone` 한 번. 경로 3개 넣고 `bootstrap.sh` 실행하면 끝.
 
 Hermes 에이전트 작업 환경(디렉토리 구조, 스킬, config, 워크플로우 규칙)을 그대로 옮기는 bootstrap repo다.
 프로젝트 코드·SSoT 본문·메모리·시크릿 값은 안 넣는다.
@@ -12,22 +12,23 @@ Hermes 에이전트 작업 환경(디렉토리 구조, 스킬, config, 워크플
 ```bash
 git clone <이 레포 URL> hermes-env
 cd hermes-env
+
+# 경로 3개만 넣으면 디렉토리·config·스킬 배치 + 검증까지 결정론적으로 실행 (git-bash/bash)
+bash bootstrap.sh --project-root ~/develop/project --e2e-root ~/develop/e2e
+bash bootstrap.sh --check --project-root ~/develop/project --e2e-root ~/develop/e2e   # 검증만
 ```
 
-Hermes 에이전트에게:
+절차·검증이 스크립트에 박혀 있어 **무료/약한 모델에서도 안 깨진다.** 에이전트에게 시키려면:
 
-> `AGENT_BOOTSTRAP.md`를 읽고 순서대로 세팅해줘.
+> `AGENT_BOOTSTRAP.md` 대로 경로 3개 물어보고 `bootstrap.sh` 실행해줘.
 
-에이전트가 0단계에서 경로 3개를 묻는다. 답하면 그 값 기준으로 나머지를 깐다.
-`hermes` CLI가 없으면 1-1단계에서 공식 설치 스크립트로 설치한다 (모델/API 키 마법사는 생략).
+`hermes` CLI가 없으면 스크립트가 공식 설치기로 설치한다 (모델/API 키 마법사는 생략). 멱등이라 여러 번 돌려도 기존 config·시크릿을 덮어쓰지 않는다.
 
 | # | 질문 | 변수 |
 |---|------|------|
 | 1 | 프로젝트 코드가 모일 루트 | `PROJECT_ROOT` |
 | 2 | ssot / reports 등 E2E 루트 | `E2E_ROOT` |
 | 3 | Hermes 설치 경로 (기본 `$HOME/.hermes`) | `HERMES_HOME` |
-
-이 질문 없이 세팅을 시작하면 안 된다.
 
 ## 한눈에
 
@@ -36,7 +37,8 @@ Hermes 에이전트에게:
 ## 구조
 
 ```
-├── AGENT_BOOTSTRAP.md          # 에이전트가 따라하는 0~7단계 체크리스트
+├── bootstrap.sh                # 결정론 세팅 실행기 (1~7단계 + --check doctor)
+├── AGENT_BOOTSTRAP.md          # 스크립트 실행 가이드 + 판단 필요한 마무리
 ├── README.md
 ├── .env.example                # 시크릿 이름만 (값 없음)
 ├── hermes/
